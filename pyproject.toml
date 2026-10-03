@@ -1,0 +1,50 @@
+[project]
+name = "marginalia"
+version = "0.1.0"
+description = "Multi-tenant RAG platform with citations, metering and evaluation"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic-settings>=2.4",
+    "sqlalchemy>=2",
+    "alembic>=1.13",
+    "psycopg[binary]>=3.2",
+    "pgvector>=0.3",
+    "sentence-transformers>=6.1.0",
+    "pypdf>=6.19.0",
+    "python-multipart>=0.0.32",
+    "torch>=2.14.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "httpx>=0.27",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/marginalia"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["db: needs a running Postgres (docker compose up -d --wait)"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+# Use CPU-only PyTorch on Linux: avoids multi-GB CUDA downloads we don't need.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
